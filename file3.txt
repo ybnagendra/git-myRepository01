@@ -1,1 +1,4 @@
-firstBranch firstFile
+firstBranch firstFile.
+
+Modified in firstBranch
+
