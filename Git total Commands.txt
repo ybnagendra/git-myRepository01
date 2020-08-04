@@ -1,0 +1,248 @@
+GitHub
+
+git init
+
+git remote add origin "?https://github.com/ybnagendra/git-myRepository01.git"
+
+git remote remove origin
+
+git pull origin master
+
+git status
+
+ git commit -m "adding first commit in local repo"
+ {
+if not working execute
+git config --global user.email "miservices.mys@gmail.com"
+
+ git config --global user.name "ybnagendra"
+then again 
+
+git commit -m "adding first commit in local repo"
+}
+git add -A
+git status
+
+ git commit -a -m "adding 3 files together"
+git log
+
+# Create Branches
+
+git branch firstBranch
+
+git checkout firstBranch
+
+git commit -m "making changes in first Branch"
+
+
+ls
+
+git checkout master
+
+ls
+
+#Merging
+
+git merge firstBranch
+ls
+
+ git checkout firstBranch
+
+ git commit -a -m "modifying file3.txt"
+
+[firstBranch 6d801bb] modifying file3.txt
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+
+ yedem@Nagendra MINGW64 /c/myGitProject (firstBranch)
+$ git checkout master
+Switched to branch 'master'
+
+yedem@Nagendra MINGW64 /c/myGitProject (master)
+$ cat file3.txt
+firstBranch firstFile
+
+yedem@Nagendra MINGW64 /c/myGitProject (master)
+$ git checkout firstBranch
+Switched to branch 'firstBranch'
+
+
+#create 2 files and write something on it
+
+yedem@Nagendra MINGW64 /c/myGitProject (firstBranch)
+$ git add -A
+
+yedem@Nagendra MINGW64 /c/myGitProject (firstBranch)
+$ git commit -a -m "adding for rebashing"
+[firstBranch 6f10ae5] adding for rebashing
+ 2 files changed, 2 insertions(+)
+ create mode 100644 file4.txt
+ create mode 100644 file5.txt
+
+yedem@Nagendra MINGW64 /c/myGitProject (firstBranch)
+$ ls
+commands.txt  file1.txt  file2.txt  file3.txt  file4.txt  file5.txt  main.py  README.md
+
+yedem@Nagendra MINGW64 /c/myGitProject (firstBranch)
+$ git checkout master
+Switched to branch 'master'
+
+yedem@Nagendra MINGW64 /c/myGitProject (master)
+$ ls
+commands.txt  file1.txt  file2.txt  file3.txt  main.py  README.md
+
+yedem@Nagendra MINGW64 /c/myGitProject (master)
+$ git checkout firstBranch
+Switched to branch 'firstBranch'
+
+yedem@Nagendra MINGW64 /c/myGitProject (firstBranch)
+$ git rebase master
+Current branch firstBranch is up to date.
+
+yedem@Nagendra MINGW64 /c/myGitProject (firstBranch)
+$ git checkout master
+Switched to branch 'master'
+
+yedem@Nagendra MINGW64 /c/myGitProject (master)
+$ git rebase firstBranch
+Successfully rebased and updated refs/heads/master.
+
+yedem@Nagendra MINGW64 /c/myGitProject (master)
+$ ls
+commands.txt  file1.txt  file2.txt  file3.txt  file4.txt  file5.txt  main.py  README.md
+
+yedem@Nagendra MINGW64 /c/myGitProject (master)
+$ ssh-keygen
+Generating public/private rsa key pair.
+Enter file in which to save the key (/c/Users/yedem/.ssh/id_rsa):
+Created directory '/c/Users/yedem/.ssh'.
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /c/Users/yedem/.ssh/id_rsa
+Your public key has been saved in /c/Users/yedem/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:EPXuZXkU2tmzzP8ZhrJoaK1Fr6IQCA2XZz2DfkA5cvM yedem@Nagendra
+The key's randomart image is:
++---[RSA 3072]----+
+|. .o.+...     .  |
+| +o X +. .   o + |
+|. .* =.o  . . +..|
+|. . . E. .   oo o|
+| . . .  S.. + .+ |
+|    .   ...o .. .|
+|   .    o..o . o.|
+|    .  +.oo o . +|
+|     .o.+o .   ..|
++----[SHA256]-----+
+
+yedem@Nagendra MINGW64 /c/myGitProject (master)
+$ cat /c/Users/yedem/.ssh/id_rsa.pub
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDzIMw0T09Qbh8qNuZZzegvb+pKNO2PFxhj0RTMdaZ85CDgduVzO/mDjLKsIsMjJ/MNG0mqF3tJlQ1SElERxVrI/yvFwiHUM0+d90+5FtK/yiU1uvfj0c/hjwuQ2MLPsTYAtgxHF9Gzw9MHNhM3LsRmTRiwl+ouZ/tt+BQTxDXtPV39V0JgLtkQNOfbm195V5eBKnp95steStavODMA3FNgkvOArPqZqRXz/y3l04FpX+o3762HOgDvilYkx29VRv2/CJ0ZycfECxRMmdV//cEtxvd5+NjPfga4GWH5BosvzQT4X55DNl2SC4eQ1Q2ZUSPyG6E9pyxi+fE7oBdpgMYjlqCunmPpyamdyk7w/Xb0kEYTB+OqO6+5OSiBZCEOk/WNTes6fbxv53H40O+gjcPt2AjtEd8n5ncEagyNFvEezysUsDuvafTTFta7FZqEiSIgP3xs6H47q/EQe2gW4QaQXgyJzYtUDlMwkcnAEa2OEMdU1JD4qrIXEtFHNUYvsvk= yedem@Nagendra
+
+yedem@Nagendra MINGW64 /c/myGitProject (master)
+$ ssh -T git@github.com
+The authenticity of host 'github.com (13.234.210.38)' can't be established.
+RSA key fingerprint is SHA256:nThbg6kXUpJWGl7E1IGOCspRomTxdCARLviKw6E5SY8.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? y
+Please type 'yes', 'no' or the fingerprint: yes
+Warning: Permanently added 'github.com,13.234.210.38' (RSA) to the list of known hosts.
+Hi ybnagendra! You've successfully authenticated, but GitHub does not provide shell access.
+
+yedem@Nagendra MINGW64 /c/myGitProject (master)
+$ git checkout firstBranch
+Switched to branch 'firstBranch'
+
+yedem@Nagendra MINGW64 /c/myGitProject (firstBranch)
+$ git push origin firstBranch
+Enumerating objects: 19, done.
+Counting objects: 100% (19/19), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (11/11), done.
+Writing objects: 100% (18/18), 1.69 KiB | 157.00 KiB/s, done.
+Total 18 (delta 3), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (3/3), done.
+remote:
+remote: Create a pull request for 'firstBranch' on GitHub by visiting:
+remote:      https://github.com/ybnagendra/git-myRepository01/pull/new/firstBranch
+remote:
+To https://github.com/ybnagendra/git-myRepository01.git
+ * [new branch]      firstBranch -> firstBranch
+
+yedem@Nagendra MINGW64 /c/myGitProject (firstBranch)
+$ git checkout master
+Switched to branch 'master'
+
+yedem@Nagendra MINGW64 /c/myGitProject (master)
+$ git push origin master
+Total 0 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/ybnagendra/git-myRepository01.git
+   d2098f7..6f10ae5  master -> master
+
+
+yedem@Nagendra MINGW64 /c/myGitProject (master)
+$ cat revert.txt
+hello
+
+This line is added.
+
+yedem@Nagendra MINGW64 /c/myGitProject (master)
+$ git log
+commit 8b595d862ecacd10337752c17fd690fdb201c4fa (HEAD -> master)
+Author: ybnagendra <miservices.mys@gmail.com>
+Date:   Wed Jul 29 17:50:39 2020 +0530
+
+    revert2
+
+commit 10d49b073d3ec32e763e84fb71e5a0197b649ec8
+Author: ybnagendra <miservices.mys@gmail.com>
+Date:   Wed Jul 29 17:49:32 2020 +0530
+
+    revert1
+
+commit 6f10ae5f80b02c301f6fae04c30f441e20bc22b3 (origin/master, origin/firstBranch, firstBranch)
+Author: ybnagendra <miservices.mys@gmail.com>
+Date:   Wed Jul 29 17:20:07 2020 +0530
+
+    adding for rebashing
+
+commit 6d801bba68195a3973cc954303b395314c7eaf76
+Author: ybnagendra <miservices.mys@gmail.com>
+Date:   Wed Jul 29 17:03:40 2020 +0530
+
+    modifying file3.txt
+
+commit ad9249fab76cf67d9ae83ff307c5f96fa85e8312
+Author: ybnagendra <miservices.mys@gmail.com>
+Date:   Wed Jul 29 16:54:13 2020 +0530
+
+    making changes in first Branch
+
+commit 7d946a766e0502fb64de20b978047deb260fa956
+Author: ybnagendra <miservices.mys@gmail.com>
+Date:   Wed Jul 29 16:46:07 2020 +0530
+
+    adding 3 files together
+
+commit f1f661408a9767b98731aabcb510f6ebeb986994
+Author: ybnagendra <miservices.mys@gmail.com>
+Date:   Wed Jul 29 16:36:36 2020 +0530
+
+    adding first commit in local repo
+
+commit d2098f75ee028a0e776dd1342f9350cd97f75ebc
+Author: ybnagendra <68959202+ybnagendra@users.noreply.github.com>
+Date:   Wed Jul 29 20:43:31 2020 +0530
+
+    Update main.py
+
+commit 9b0c108bd2168f89e057ff5cd685299578cdb425
+
+yedem@Nagendra MINGW64 /c/myGitProject (master)
+$ git checkout 10d49b07 revert.txt
+Updated 1 path from e25d24b
+
+yedem@Nagendra MINGW64 /c/myGitProject (master)
+$ cat revert.txt
+hello
+
+
