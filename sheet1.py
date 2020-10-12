@@ -15,7 +15,7 @@ k = keypad.KEYPAD()
                                                                                                                                                     
 delay = 1                                                                                                                                           
 usb_dir_path = '/mnt/sda1'                                                                                                                          
-pth1 = '/mnt/mmcblk0p1/BKP_DLPV3b/SrcDir'                                                                                                           
+pth1 = '/mnt/mmcblk0p1/CL2/SrcDir'                                                                                                           
                                                                                                                                                     
 def oledBkpDisp1():                                                                                                                                 
     oledExp.clear()                                                                                                                                 
@@ -77,24 +77,7 @@ class WRITE_DATA_IN_FILE:
         f = open(self.fileName, "w")                                                                                                                
         f.write(self.response + '\n')                                                                                                               
         f.close()                                                                                                                                   
-'''                                                                                                                                                 
-class GET_DATE_TIME:                                                                                                                                
-    def __init__(self):                                                                                                                             
-        now_utc = datetime.datetime.utcnow()                                                                                                        
-        local_tz = pytz.timezone('Asia/Kolkata')                                                                                                    
-        now_utc = pytz.utc.localize(now_utc)                                                                                                        
-        x = now_utc.astimezone(local_tz)                                                                                                            
-        self.dd = x.strftime("%d")                                                                                                                  
-        self.mm = x.strftime("%m")                                                                                                                  
-        self.yy = x.strftime("%y")                                                                                                                  
-        self.hr = x.strftime("%H")                                                                                                                  
-        self.mnts = x.strftime("%M")                                                                                                                
-        self.secs = x.strftime("%S")                                                                                                                
-        self.dt1 = x.strftime("%d%m%y")                                                                                                             
-        self.oledDate = self.dd + '/' + self.mm + '/' + self.yy + '    ' + self.hr + ':' + self.mnts + ':' + self.secs                              
-                                                                                                                                                    
-'''                                                                                                                                                 
-                                                                                                                                                    
+                                                                                                                                      
 class RTC_DATE_TIME:                                                                                                                                
     def __init__(self):                                                                                                                             
         ds3231 = RTC_Driver.SDL_DS3231(0, 0x68)                                                                                                     
@@ -111,13 +94,7 @@ class RTC_DATE_TIME:
                                                                                                                                                     
 class RUN_MODE:                                                                                                                                     
     def __init__(self):                                                                                                                             
-        print("Enters Run mode")                                                                                                                    
-        # oledExp.setCursor(6, 0)                                                                                                                   
-        # oledExp.write("*********************")                                                                                                    
-        # oledExp.setCursor(7, 7)                                                                                                                   
-        # oledExp.write("RUN MODE")                                                                                                                 
-        # time.sleep(1)                                                                                                                             
-        # oledExp.clear()                                                                                                                           
+        print("Enters Run mode")                                                                                                                                                                                                                                    
         res_add = ''                                                                                                                                
         bkp_data = ''                                                                                                                               
                                                                                                                                                     
@@ -146,18 +123,7 @@ class RUN_MODE:
             _seconds=int(r.seconds)                                                                                                                 
             _minutes=int(r.minutes)                                                                                                                 
             secs =_seconds                                                                                                                          
-            mnts =_minutes                                                                                                                          
-            '''                                                                                                                                     
-            isUSB = os.path.isdir(usb_dir_path)                                                                                                     
-            if isUSB:                                                                                                                               
-                print("USB Inserted")                                                                                                               
-                oledExp.setCursor(3, 0)                                                                                                             
-                oledExp.write("USB Connected")                                                                                                      
-                time.sleep(1)                                                                                                                       
-                oledExp.clear()                                                                                                                     
-                copyfiles_to_usb()                                                                                                                  
-                                                                                                                                                    
-            '''                                                                                                                                     
+            mnts =_minutes                                                                                                                                                                                                                                                           
             cdir = pth1 + '/CDIR_' + r.dir_format                                                                                                   
             isDir = os.path.isdir(cdir)                                                                                                             
             while (isDir == 0):                                                                                                                     
