@@ -1,9 +1,11 @@
 import copy
 import omega_gpio
 import time
+import dlmode
+import configure
+from OmegaExpansion import oledExp
 
-
-class KEYPAD:
+class DL_MODES:
     def keypad_init(self):
         self.a = [0, 1, 2, 3, 11, 18, 8, 9]
         self.r = [0, 1, 2, 3]
@@ -39,38 +41,11 @@ class KEYPAD:
 
         for pin in self.c:
             omega_gpio.initpin(pin, 'in')
-
-    def getPressKey(self):
-        while True:
-            self.keypad_init()
-            rpos = 0
-            for rpin in self.r:
-                omega_gpio.setoutput(self.r[0], 0)
-                omega_gpio.setoutput(self.r[1], 0)
-                omega_gpio.setoutput(self.r[2], 0)
-                omega_gpio.setoutput(self.r[3], 0)
-                omega_gpio.setoutput(rpin, 1)
-                time.sleep(0.05)
-                cpos = 0
-                for cpin in self.c:
-                    input = omega_gpio.readinput(cpin)
-                    self.values[rpos][cpos] = input
-                    cpos = cpos + 1
-                rpos = rpos + 1
-
-            for x in range(0, 4):
-                for y in range(0, 4):
-                    if self.values[x][y] != self.lastvalues[x][y]:
-                        self.keycode = self.key[x][y]
-                        if self.values[x][y] == 1:
-                            return self.keycode
-
-            lastvalues = copy.deepcopy(self.values)
-
-
-    def checkKey(self):
+            
+            
+    def modeSelection(self):
         self.keypad_init()
-
+        rpos=0
         if True:
             for rpin in self.r:
                 omega_gpio.setoutput(self.r[0], 0)
@@ -91,19 +66,22 @@ class KEYPAD:
                     if self.values[x][y] != self.lastvalues[x][y]:
                         keycode = self.key[x][y]
                         if self.values[x][y] == 1:
-                            if keycode == 'D':
-                                print("D")
-                            elif keycode == 'A':
-                                print("A")
+                            if keycode == '1':
+                                oledExp.setCursor(7, 0)
+                                oledExp.write(keycode)
+                                configure.DL_SETTINGS()
+                                dlmode.RUN_MODE()
+                            elif keycode == '2':
+                                oledExp.setCursor(7, 0)
+                                oledExp.write(keycode)
+                                dlmode.DIRECT_RUN_MODE()
+                            elif keycode == '3':
+                                oledExp.setCursor(7, 0)
+                                oledExp.write(keycode)
+                                dlmode.DIRECT_BACKUP_MODE()
                             else:
-                                print("Other")
+                                oledExp.write("Invalid Selection")
+                                oledExp.write("Select 1 or 2 or 3")
+                                time.sleep(2)
             lastvalues = copy.deepcopy(self.values)
-
-            ####################################################################################
-            ####################################################################################
-if __name__=="__main__":
-        print("Hello")
-        k=KEYPAD()
-        while True:
-                key=k.getPressKey()
-                print(key)
+   
