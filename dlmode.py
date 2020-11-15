@@ -151,17 +151,24 @@ class RUN_MODE:
                 # ds3231.write_now()  # through Wifi                                                                                                
                 break                                                                                                                               
                                                                                                                                                     
-            if secs % 10 == 0:                                                                                                                      
-                res1 = a.analyserRequest('rawData')                                                                                                 
-                res2 = a.analyserRequest('userData')                                                                                                
-                                                                                                                                                    
-                resp1 = "V=448 A=21 KW=875 R=138.8226 C=70.082 G=92.0 L=63 Z=51.26 F=43.977 "                                                       
-                resp2 = "KW=295.04 VAR=400.81 KVA=497.692 Ah=641.17 J=255.5 E=670.6 M=571.19 Wb=198.3392"                                           
-                                                                                                                                                    
-                resA = resp1 + '\n' + resp2 + '\n'                                                                                                  
-                resB = res1 + '\n' + res2 + '\n'                                                                                                    
-                res = resA + resB                                                                                                                   
-                                                                                                                                                    
+            if secs % 10 == 0:    
+                res1 = a.analyserRequest('rawData')
+                res2 = a.analyserRequest('userData')
+
+                ser.write('#01\r\n')
+                resp1 = ser.read()  # read serial port
+                time.sleep(0.03)
+                data_left = ser.inWaiting()  # check for remaining byte
+                resp1 += ser.read(data_left)
+                # print (res1)
+
+                ser.write('#02\r\n')
+                resp2 = ser.read()  # read serial port
+                time.sleep(0.03)
+                data_left = ser.inWaiting()  # check for remaining byte
+                resp2 += ser.read(data_left)
+                # print (res2)
+                                         
                 x1 = resp1.index('V')                                                                                                               
                 x2 = resp1.index('A')                                                                                                               
                 x3 = resp1.index('KW')                                                                                                              
@@ -199,15 +206,18 @@ class RUN_MODE:
                 electricField = resp2[y6 + 2:y7 - 1]                                                                                                
                 magneticField = resp2[y7 + 2:y8 - 1]                                                                                                
                 magneticFlux = resp2[y8 + 3:]                                                                                                       
-                                                                                                                                                    
-                res_add = res_add + res                                                                                                             
+                                                                                                                                                   
                 time.sleep(1)                                                                                                                       
                 try:                                                                                                                                
                     oledExp.clear()                                                                                                                 
                 except:                                                                                                                             
                     pass                                                                                                                            
                                                                                                                                                     
-                if secs == 0:                                                                                                                       
+                if secs == 0:    
+                    resA = resp1 + '\n' + resp2 + '\n'                                                                                              
+                    resB = res1 + '\n' + res2 + '\n' + '\n'                                                                                         
+                    res = resA + resB                                                                                                               
+                    res_add = res_add+res     
                     fln = 'File_hr' + r.hours + '_mnts' + str(mnts - 1)                                                                             
                     pth = '/mnt/mmcblk0p1/DLPV5b'                                                                                                   
                     WRITE_DATA_IN_FILE(pth, fln, res_add)                                                                                           
