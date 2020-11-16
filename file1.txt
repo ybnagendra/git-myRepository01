@@ -1,39 +1,24 @@
-import shutil
-import os.path
+import threading
+import serial
 
-delay = 1
+connected = False
+port = 'COM4'
+baud = 9600
 
-def copytree(src, dst, symlinks=False, ignore=None):
-    for item in os.listdir(src):
-        s = os.path.join(src, item)
-        d = os.path.join(dst, item)
-        if os.path.isdir(s):
-            shutil.copytree(s, d, symlinks, ignore)
-        else:
-            shutil.copy2(s, d)
+serial_port = serial.Serial(port, baud, timeout=0)
 
-class MAKE_DIRECTORY:
-    def __init__(self, pth, directory):
-        self.parent_dir = pth
-        self.directory = directory
-        dst_dir_path = os.path.join(self.parent_dir, self.directory)
-        os.mkdir(dst_dir_path)
+def handle_data(data):
+    print(data)
 
-class RTC_BKP_TIME:
-    def __init__(self):
-        ds3231 = RTC_Driver.SDL_DS3231(0, 0x68)
-        DS3231 = ds3231.read_datetime()
-        ds = str(DS3231)
-        self.bkpdt= ds[8:10] + ds[5:7] + ds[2:4]  +"_"+ds[11:13] + ds[14:16] + ds[17:]
+def read_from_port(ser):
+    while not connected:
+        #serin = ser.read()
+        connected = True
 
+        while True:
+           print("test")
+           reading = ser.readline().decode()
+           handle_data(reading)
 
-class EMMC_TO_USB_COPY:
-    def __init__(self):
-        r=RTC_BKP_TIME()
-        src = '/mnt/mtdblock6/DLPV5b/SrcDir/'
-        usb_pth = '/mnt/sda1'
-        bkp_dir = 'BKP_' + r.bkpdt
-        MAKE_DIRECTORY(usb_pth, bkp_dir)
-        dest = usb_pth + "/" + bkp_dir
-        shutil.copytree(src,dest)
-
+thread = threading.Thread(target=read_from_port, args=(serial_port,))
+thread.start()
