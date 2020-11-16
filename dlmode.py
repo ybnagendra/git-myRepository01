@@ -1,74 +1,24 @@
 import os.path
-import datetime, time, pytz
+import time
 import analyserSensor
-import emmctousb
 import zipfile
-#import keypad
-import serial
+import serial,shutil
 import RTC_Driver
 from OmegaExpansion import oledExp
 
 ser = serial.Serial(port="/dev/ttyS1", baudrate=115200, timeout=100)
 a = analyserSensor.ANALYSER_SENSOR()
-#k = keypad.KEYPAD()
-
-delay = 1
 usb_dir_path = '/mnt/sda1'
 pth1 = '/mnt/mmcblk0p1/DLPV5b/SrcDir'
 
-def oledBkpDisp1():
-    try:
-        oledExp.clear()
-        oledExp.setCursor(0, 0)
-        oledExp.write("Enter FROM and TO")
-        oledExp.setCursor(1, 0)
-        oledExp.write("dates in the format:")
-        oledExp.setCursor(2, 0)
-        oledExp.write("dd*mm*yy ")
-        oledExp.setCursor(3, 0)
-        oledExp.write("Ex: 23/01/20")
-        time.sleep(2)
-    except:
-        pass
-
-def copyfiles_to_usb():
-    isUSB = os.path.isdir(usb_dir_path)
-    time.sleep(3)
-    oledBkpDisp1()
-    emmctousb.EMMC_TO_USB_COPY()
-    try:
-        oledExp.clear()
-        oledExp.setCursor(1, 0)
-        oledExp.write("Copy Done")
-        oledExp.setCursor(2, 0)
-        oledExp.write("Remove Pendrive")
-        oledExp.setCursor(3, 0)
-        oledExp.write("to enter Run Mode")
-        oledExp.setCursor(6, 0)
-        oledExp.write("*********************")
-        oledExp.setCursor(7, 8)
-        oledExp.write("BKP MODE")
-    except:
-        pass
-
-    print("Copy Done")
-    print("Remove Pendrive")
-    count3=0
-    while (isUSB):
-        isUSB = os.path.isdir(usb_dir_path)
-        time.sleep(1)
-        count3=count3+1
-        if count3==60:
-            RUN_MODE()
+def copytree(src, dst, symlinks=False, ignore=None):
+    for item in os.listdir(src):
+        s = os.path.join(src, item)
+        d = os.path.join(dst, item)
+        if os.path.isdir(s):
+            shutil.copytree(s, d, symlinks, ignore)
         else:
-            pass
-    else:
-        try:
-            oledExp.clear()
-        except:
-            pass
-        print("Enters Run mode after Files Copied")
-
+            shutil.copy2(s, d)
 
 class MAKE_DIRECTORY:
     def __init__(self, pth, directory):
@@ -76,7 +26,6 @@ class MAKE_DIRECTORY:
         self.directory = directory
         dst_dir_path = os.path.join(self.parent_dir, self.directory)
         os.mkdir(dst_dir_path)
-
 
 class WRITE_DATA_IN_FILE:
     def __init__(self, pth, fileName, response):
@@ -86,7 +35,6 @@ class WRITE_DATA_IN_FILE:
         f = open(self.fileName, "w")
         f.write(self.response + '\n')
         f.close()
-
 
 class RTC_DATE_TIME:
     def __init__(self):
@@ -100,7 +48,25 @@ class RTC_DATE_TIME:
         self.rtc_date = ds[8:10] + "/" + ds[5:7] + "/" + ds[2:4]
         self.rtc_time = ds[11:13] + ":" + ds[14:16] + ":" + ds[17:]
         self.rtc_dateTime = "Dt: " + self.rtc_date + " " + self.rtc_time
+        self.bkpdt = ds[8:10] + ds[5:7] + ds[2:4] + "_" + ds[11:13] + ds[14:16] + ds[17:]
 
+class EMMC_TO_USB_COPY:
+    def __init__(self):
+        r=RTC_DATE_TIME()
+        src = '/mnt/mmcblk0p1/DLPV5b/SrcDir/'
+        usb_pth = '/mnt/sda1'
+        bkp_dir = 'BKP_' + r.bkpdt
+        dest = usb_pth + "/" + bkp_dir
+        shutil.copytree(src,dest)
+        print("Copy done")
+        try:
+            oledExp.clear()
+            oledExp.setCursor(4, 0)
+            oledExp.write("copy Done")
+            time.sleep(5)
+            oledExp.clear()
+        except:
+            pass
 
 class RUN_MODE:
     def __init__(self):
@@ -128,9 +94,11 @@ class RUN_MODE:
         electricField = ''
         magneticField = ''
         magneticFlux = ''
-        
+
         while True:
+            # checks usb path
             isUSB = os.path.isdir(usb_dir_path)
+
             if isUSB == 0:
                 copyDone = 0
 
@@ -139,18 +107,17 @@ class RUN_MODE:
 
             if copyDone == 0 and isUSB == 1:
                 print("USB Inserted")
-                oledExp.setCursor(3, 0)
-                oledExp.write("USB Connected")
-                time.sleep(1)
-                oledExp.clear()
-                copyfiles_to_usb()
-                copyDone = 1
+                try:
+                    oledExp.setCursor(3, 0)
+                    oledExp.write("USB Connected")
+                    time.sleep(1)
+                    oledExp.clear()
+                except:
+                    pass
 
-            
-            try:
-                oledExp.clear()
-            except:
-                pass
+                EMMC_TO_USB_COPY()
+                copyDone = 1
+                
 
             r = RTC_DATE_TIME()
             _seconds = int(r.seconds)
@@ -163,9 +130,7 @@ class RUN_MODE:
             while (isDir == 0):
                 cdirectory = 'CDIR_' + r.dir_format
                 MAKE_DIRECTORY(pth1, cdirectory)
-                # pth2 = os.path.join(pth1, cdirectory)
-                # idirectory = 'IDIR_' + r.dir_format
-                # MAKE_DIRECTORY(pth2, idirectory)
+
                 # date time synchronize
                 # ds3231.write_now()  # through Wifi
                 break
@@ -174,12 +139,17 @@ class RUN_MODE:
                 res1 = a.analyserRequest('rawData')
                 res2 = a.analyserRequest('userData')
 
-                resp1 = "V=448 A=21 KW=875 R=138.8226 C=70.082 G=92.0 L=63 Z=51.26 F=43.977 "
-                resp2 = "KW=295.04 VAR=400.81 KVA=497.692 Ah=641.17 J=255.5 E=670.6 M=571.19 Wb=198.3392"
+                ser.write('#01\r\n')
+                resp1 = ser.read()  # read serial port
+                time.sleep(0.03)
+                data_left = ser.inWaiting()  # check for remaining byte
+                resp1 += ser.read(data_left)
 
-                resA = resp1 + '\n' + resp2 + '\n'
-                resB = res1 + '\n' + res2 + '\n'
-                res = resA + resB
+                ser.write('#02\r\n')
+                resp2 = ser.read()  # read serial port
+                time.sleep(0.03)
+                data_left = ser.inWaiting()  # check for remaining byte
+                resp2 += ser.read(data_left)
 
                 x1 = resp1.index('V')
                 x2 = resp1.index('A')
@@ -219,11 +189,15 @@ class RUN_MODE:
                 magneticField = resp2[y7 + 2:y8 - 1]
                 magneticFlux = resp2[y8 + 3:]
 
-                res_add = res_add + res
                 time.sleep(1)
                 oledExp.clear()
 
                 if secs == 0:
+                    resA = resp1 + '\n' + resp2 + '\n'
+                    resB = res1 + '\n' + res2 + '\n'
+                    res = resA + resB
+                    res_add = res_add + res
+
                     fln = 'File_hr' + r.hours + '_mnts' + str(mnts - 1)
                     pth = '/mnt/mmcblk0p1/DLPV5b'
                     WRITE_DATA_IN_FILE(pth, fln, res_add)
@@ -371,10 +345,9 @@ class DIRECT_RUN_MODE:
                 pass
             time.sleep(1)
             count = count + 1
-            # oledExp.clear()
             isUSB = os.path.isdir(usb_dir_path)
             del r
-            if count == 60:
+            if count == 30:
                 RUN_MODE()
             else:
                 pass
@@ -390,15 +363,18 @@ class DIRECT_BACKUP_MODE:
     def __init__(self):
         isUSB = os.path.isdir(usb_dir_path)
         if isUSB:
-            copyfiles_to_usb()
+            EMMC_TO_USB_COPY()
         else:
-            oledExp.setCursor(2, 0)
-            oledExp.write("Connect USB to enter BACKUP Mode")
-            # print("USB not Connected")
-            oledExp.setCursor(6, 0)
-            oledExp.write("*********************")
-            oledExp.setCursor(7, 3)
-            oledExp.write("WAITING MODE")
+            try:
+                oledExp.setCursor(2, 0)
+                oledExp.write("Connect USB to enter BACKUP Mode")
+                oledExp.setCursor(6, 0)
+                oledExp.write("*********************")
+                oledExp.setCursor(7, 3)
+                oledExp.write("WAITING MODE")
+            except:
+                pass
+
             count2 = 0
             while (isUSB == 0):
                 isUSB = os.path.isdir(usb_dir_path)
@@ -409,11 +385,10 @@ class DIRECT_BACKUP_MODE:
                 else:
                     pass
             else:
-                oledExp.clear()
-                copyfiles_to_usb()
+                try:
+                    oledExp.clear()
+                except:
+                    pass
+                EMMC_TO_USB_COPY()
 
-            ###################################################################
-
-
-
-
+                ###################################################################
