@@ -175,9 +175,7 @@ class RUN_MODE:
                     resp1 = "V=448 A=21 KW=875 R=138.8226 C=70.082 G=92.0 L=63 Z=51.26 F=43.977 "
                     resp2 = "KW=295.04 VAR=400.81 KVA=497.692 Ah=641.17 J=255.5 E=670.6 M=571.19 Wb=198.3392"
 
-                    resA = resp1 + '\n' + resp2 + '\n'
-                    resB = res1 + '\n' + res2 + '\n'
-                    res = resA + resB
+                    
 
                     x1 = resp1.index('V')
                     x2 = resp1.index('A')
@@ -222,6 +220,10 @@ class RUN_MODE:
                     oledExp.clear()
 
                     if secs == 0:
+                        resA = resp1 + '\n' + resp2 + '\n'
+                        resB = res1 + '\n' + res2 + '\n'
+                        res = resA + resB
+                    
                         fln = 'File_hr' + r.hours + '_mnts' + str(mnts - 1)
                         pth = '/mnt/mmcblk0p1/DLPV5b'
                         WRITE_DATA_IN_FILE(pth, fln, res_add)
