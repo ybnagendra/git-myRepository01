@@ -1,24 +1,24 @@
-import threading
-import serial
+import serial, time
 
-connected = False
-port = 'COM4'
-baud = 9600
+def settings():
+    print("Configure mode ")
+    
+def runMode():
+    print("Run mode is on")
 
-serial_port = serial.Serial(port, baud, timeout=0)
-
-def handle_data(data):
-    print(data)
-
-def read_from_port(ser):
-    while not connected:
-        #serin = ser.read()
-        connected = True
-
-        while True:
-           print("test")
-           reading = ser.readline().decode()
-           handle_data(reading)
-
-thread = threading.Thread(target=read_from_port, args=(serial_port,))
-thread.start()
+if __name__ == "__main__":
+    ser=serial.Serial("/dev/ttyS1",115200,timeout=20)
+    
+    while ser.is_open==True:
+        cmd=ser.read()
+        time.sleep(0.03)
+        data_left=ser.inWaiting()
+        cmd += ser.read(data_left)
+        if cmd== "CONF" or "conf":
+            settings()
+        elif cmd == "run":
+            runMode()
+        else:
+            pass
+    print("Timeout Run mode")
+            
