@@ -1,24 +1,45 @@
-import serial, time
+import time
+from OmegaExpansion import oledExp
+import configure
+import dlmode
+import serial
 
-def settings():
-    print("Configure mode ")
-    
-def runMode():
-    print("Run mode is on")
+def welcomeMessage():
+    oledExp.setVerbosity(0)
+    oledExp.driverInit()
+    oledExp.clear()
+    oledExp.setCursor(3, 0)
+    oledExp.write("Welcome to OnionOmega")
+    oledExp.setCursor(4, 0)
+    oledExp.write("Data Logger Project")
+    time.sleep(3)
 
 if __name__ == "__main__":
-    ser=serial.Serial("/dev/ttyS1",115200,timeout=20)
-    
-    while ser.is_open==True:
-        cmd=ser.read()
+    try:
+        welcomeMessage()
+    except:
+        pass
+
+    loopBreak = 0
+    while True:
+        ser = serial.Serial("/dev/ttyS1", 115200, timeout=20)
+        cmd = ''
+        cmd = ser.read()
         time.sleep(0.03)
-        data_left=ser.inWaiting()
+        data_left = ser.inWaiting()
+        ser.close()
         cmd += ser.read(data_left)
-        if cmd== "CONF" or "conf":
-            settings()
-        elif cmd == "run":
-            runMode()
+        if cmd == "CONF":
+            configure.DL_SETTINGS()
+            dlmode.RUN_MODE()
         else:
-            pass
-    print("Timeout Run mode")
-            
+            ser.open()
+            ser.write("give command 'conf' to go to settings\r\n")
+            ser.close()
+
+        loopBreak = loopBreak + 1
+        if loopBreak == 3:
+            break
+    print("Entering Run mode")
+    dlmode.DIRECT_RUN_MODE()
+
