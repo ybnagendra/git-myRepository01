@@ -1,27 +1,47 @@
-import os.path
+import serial
 import time
 
-usb_dir_path = '/mnt/sda1'
+# Open port with baud rate
+ser = serial.Serial(port="/dev/ttyS1", baudrate=115200, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE,timeout=100)
+if __name__=="__main__":
+        siteId = ''
+        monitoringId = ''
+        analyzerId = ''
+        parameterId = ''
+        while len(siteId) == 0:
+            # Serial input
+            ser.write('Enter site ID: ')
+            siteId = ser.read()  # read serial port
+            time.sleep(0.03)
+            data_left = ser.inWaiting()  # check for remaining byte
+            siteId += ser.read(data_left)
+            ser.write(siteId + '\r\n')
+        while len(monitoringId) == 0:
+            ser.write('Enter monitoring ID: ')
+            monitoringId = ser.read()  # read serial port
+            time.sleep(0.03)
+            data_left = ser.inWaiting()  # check for remaining byte
+            monitoringId += ser.read(data_left)
+            ser.write(monitoringId + '\r\n')
+        while len(analyzerId) == 0:
+            ser.write('Enter analyserID: ')
+            analyzerId = ser.read()  # read serial port
+            time.sleep(0.03)
+            data_left = ser.inWaiting()  # check for remaining byte
+            analyzerId += ser.read(data_left)
+            ser.write(analyzerId + '\r\n')
+        while len(parameterId) == 0:
+            ser.write('Enter ParameterID: ')
+            parameterId = ser.read()  # read serial port
+            time.sleep(0.03)
+            data_left = ser.inWaiting()  # check for remaining byte
+            parameterId += ser.read(data_left)
+            ser.write(parameterId + '\r\n')
 
-def runMode():
-    print("Run Mode")
-    time.sleep(2)
+        f = open('confdata.txt', 'w')
+        f.write(siteId + '\n')
+        f.write(monitoringId + '\n')
+        f.write(analyzerId + '\n')
+        f.write(parameterId + '\n')
 
-if __name__ == "__main__":
-    print("Program start")
-    copyDone = 0
-    isUSB=0
-    while True:
-        if isUSB==0:
-            copyDone=0
-            
-        if copyDone==0:
-            isUSB = os.path.isdir(usb_dir_path)
-
-        if copyDone==0 and isUSB==1:
-            print("EMMC TO USB Copy")
-            copyDone=1
-
-        runMode()
-        isUSB = os.path.isdir(usb_dir_path)
-
+        print("Program Ends")
